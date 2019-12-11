@@ -14,14 +14,14 @@ import java.util.concurrent.Future;
 public class CommandTest {
 
     /**
-     * 测试同步执行,execute会阻塞当前线程
+     * 测试同步执行,execute方法会阻塞当前线程,但实际执行
+     * 的任务线程不是当前线程而是别的
      */
     @Test
     public void testSynchronous() {
         /* blocking */
        System.out.println(new Command("world").execute());
-       System.out.println("do other thing");
-
+       System.out.println("do other thing:"+Thread.currentThread().getName());
     }
 
     /**
