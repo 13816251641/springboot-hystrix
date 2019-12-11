@@ -14,17 +14,17 @@ public class Command extends HystrixCommand<String> {
     private final String name;
 
     public Command(String name){
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("helloworld")).
-                andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(6000)));
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Command")).
+                andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(500)));
         this.name = name;
     }
 
     @Override
     public String run() throws Exception {
-        /* hystrix线程池的线程运行下面的代码 */
+        /* hystrix线程池的线程运行下面的代码  线程名:hystrix-Command-1 */
         System.out.println("run():"+Thread.currentThread().getName());
-        Thread.sleep(5000);
-        int i = 5/0;
+        Thread.sleep(15000);
+        //int i = 5/0; 模拟异常
         return "hello "+name+"!";
     }
 
@@ -35,7 +35,7 @@ public class Command extends HystrixCommand<String> {
      */
     @Override
     protected String getFallback() {
-        /* hystrix线程池的线程运行下面的代码 */
+        /* hystrix线程池的线程运行下面的代码  线程名:HystrixTimer-1 */
         System.out.println("getFallback():"+Thread.currentThread().getName());
         return "faild";
     }

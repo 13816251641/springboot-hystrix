@@ -11,6 +11,9 @@ import java.util.concurrent.Future;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+/**
+   测试基于线程池隔离的command
+ */
 public class CommandTest {
 
     /**
@@ -20,7 +23,7 @@ public class CommandTest {
     @Test
     public void testSynchronous() {
         /* blocking */
-       System.out.println(new Command("world").execute());
+       new Command("world").execute();
        System.out.println("do other thing:"+Thread.currentThread().getName());
     }
 
