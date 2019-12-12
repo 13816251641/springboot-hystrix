@@ -23,9 +23,11 @@ public class Command2 extends HystrixCommand<String> {
     private final String name;
 
     public Command2(String name){
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Command2")).
-                andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(500)
-                .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)));
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Command2Group"))
+                     .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
+                                                     .withExecutionTimeoutInMilliseconds(500)//超时时间
+                                                     .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)//策略方式
+                                                     .withExecutionIsolationSemaphoreMaxConcurrentRequests(15)));//最大并发数,超过这个直接回退
         this.name = name;
     }
 
@@ -34,7 +36,7 @@ public class Command2 extends HystrixCommand<String> {
         /* 基于信号量的策略下是tomcat线程执行下面的代码 线程名:main */
         System.out.println("run():"+Thread.currentThread().getName());
         /* 模拟超时 */
-        Thread.sleep(10000);
+        Thread.sleep(5000);
         //int i = 5/0; //模拟异常
         System.out.println("耗时完毕:"+Thread.currentThread().getName());
         return "hello "+name+"!";

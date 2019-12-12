@@ -23,10 +23,11 @@ public class CommandTest {
      * 会立即调用回退方法并立即返回
      */
     @Test
-    public void testSynchronous() {
+    public void testSynchronous() throws Exception {
         /* blocking */
         String result = new Command("world").execute();
         System.out.println("do other thing:"+result+":"+Thread.currentThread().getName());
+        Thread.sleep(20000);
     }
 
     /**

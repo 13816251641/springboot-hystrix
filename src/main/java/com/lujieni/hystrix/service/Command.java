@@ -1,8 +1,6 @@
 package com.lujieni.hystrix.service;
 
-import com.netflix.hystrix.HystrixCommand;
-import com.netflix.hystrix.HystrixCommandGroupKey;
-import com.netflix.hystrix.HystrixCommandProperties;
+import com.netflix.hystrix.*;
 
 /**
  * @Auther ljn
@@ -14,8 +12,13 @@ public class Command extends HystrixCommand<String> {
     private final String name;
 
     public Command(String name){
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Command")).
-                andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(500)));
+        /*  同一个command group key共用一个线程池 */
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("CommandGroup"))
+                     .andCommandKey(HystrixCommandKey.Factory.asKey("Command"))
+                     .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
+                                                       .withCoreSize(20) // 线程池线程个数
+                                                       .withQueueSizeRejectionThreshold(10))                 // 线程池等待队列个数
+                     .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(500)));//超时时间
         this.name = name;
     }
 
@@ -25,6 +28,7 @@ public class Command extends HystrixCommand<String> {
         System.out.println("run():"+Thread.currentThread().getName());
         /* 超时立马执行回退方法并立即返回 */
         Thread.sleep(15000);
+        System.out.println("耗时完毕:"+Thread.currentThread().getName());
         //int i = 5/0; 模拟异常
         return "hello "+name+"!";
     }
