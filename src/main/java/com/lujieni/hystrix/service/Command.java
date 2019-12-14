@@ -13,7 +13,7 @@ public class Command extends HystrixCommand<String> {
 
     public Command(String name){
         /*  同一个command group key共用一个线程池 */
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("CommandGroup"))
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("CommandGroupL"))
                      .andCommandKey(HystrixCommandKey.Factory.asKey("Command"))
                      .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
                                                        .withCoreSize(20) // 线程池线程个数
@@ -27,8 +27,10 @@ public class Command extends HystrixCommand<String> {
         /* hystrix提供的线程池中的线程运行下面的代码  线程名:hystrix-Command-1 */
         System.out.println("run():"+Thread.currentThread().getName());
         /* 超时立马执行回退方法并立即返回 */
-        Thread.sleep(15000);
-        System.out.println("耗时完毕:"+Thread.currentThread().getName());
+        /*
+          Thread.sleep(15000);
+          System.out.println("耗时完毕:"+Thread.currentThread().getName());
+         */
         //int i = 5/0; 模拟异常
         return "hello "+name+"!";
     }
@@ -43,5 +45,17 @@ public class Command extends HystrixCommand<String> {
         /* hystrix提供的线程执行下面的代码 线程名:HystrixTimer-1 */
         System.out.println("getFallback():"+Thread.currentThread().getName());
         return "faild";
+    }
+
+    /**
+     * 开启请求缓存，只需重载getCacheKey方法
+     * 因为我们这里使用的是id，不同的请求来请求的时候会有不同cacheKey所以，同一请求第一次访问会调用，之后都会走缓存
+     * 好处：    1.减少请求数、降低并发
+     *           2.同一用户上下文数据一致
+     *           3.这个方法会在run()和contruct()方法之前执行，减少线程开支
+     */
+    @Override
+    protected String getCacheKey() {
+        return name;
     }
 }
