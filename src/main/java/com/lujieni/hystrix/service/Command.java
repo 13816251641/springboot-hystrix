@@ -17,8 +17,12 @@ public class Command extends HystrixCommand<String> {
                      .andCommandKey(HystrixCommandKey.Factory.asKey("Command"))
                      .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
                                                        .withCoreSize(20) // 线程池线程个数
-                                                       .withQueueSizeRejectionThreshold(10))                 // 线程池等待队列个数
-                     .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(500)));//超时时间
+                                                       .withQueueSizeRejectionThreshold(10)) // 线程池等待队列个数
+                     .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
+                                                    .withExecutionTimeoutInMilliseconds(500)// 方法超时时间
+                                                    .withCircuitBreakerRequestVolumeThreshold(30) // 开启断路器的阈值
+                                                    .withCircuitBreakerErrorThresholdPercentage(40)// 多少比例不行开启断路器
+                                                    .withCircuitBreakerSleepWindowInMilliseconds(3000)));// open->close的窗口时间
         this.name = name;
     }
 
