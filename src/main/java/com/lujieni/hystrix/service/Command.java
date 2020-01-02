@@ -24,6 +24,7 @@ public class Command extends HystrixCommand<String> {
                                                     .withCircuitBreakerErrorThresholdPercentage(40)// 多少比例不行开启断路器
                                                     .withCircuitBreakerSleepWindowInMilliseconds(3000)));// open->close的窗口时间
         this.name = name;
+        
     }
 
     @Override
